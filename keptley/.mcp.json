@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "keptley": {
+      "type": "http",
+      "url": "${KEPTLEY_API_URL:-https://api.keptley.com}/mcp",
+      "headers": { "Authorization": "Bearer ${KEPTLEY_TOKEN}" }
+    }
+  }
+}

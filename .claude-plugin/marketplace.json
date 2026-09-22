@@ -1,0 +1,21 @@
+{
+  "name": "keptley",
+  "owner": {
+    "name": "Keptley",
+    "email": "admin@keptley.com",
+    "url": "https://keptley.com"
+  },
+  "metadata": {
+    "description": "Keptley: everything your team knows, kept and true."
+  },
+  "plugins": [
+    {
+      "name": "keptley",
+      "source": "./keptley",
+      "description": "Answers from your team's own pages, and a record of what every AI session changed and why.",
+      "category": "productivity",
+      "homepage": "https://keptley.com",
+      "keywords": ["docs", "knowledge", "ledger", "drift", "provenance"]
+    }
+  ]
+}

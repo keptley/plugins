@@ -212,6 +212,10 @@ new one.
 
 ---
 
+## Privacy
+
+What the plugin sends, what it never sends, and who can see it: [PRIVACY.md](PRIVACY.md).
+
 ## Support and terms
 
 Questions, problems and feature requests: **admin@keptley.com**.

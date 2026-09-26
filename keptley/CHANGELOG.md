@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+- A session is told when the `CLAUDE.md` it is reading is not the version the team has: which
+  version Keptley holds, the pull request that made it and why. Working from an uncommitted
+  CLAUDE.md means working from instructions nobody else has, and every page written in that session
+  inherits them.
+- It also says when Keptley holds guidance this checkout is not reading at all.
+- Only hashes of those files are sent, never their content: a working copy of your CLAUDE.md is
+  yours until you commit it.
+
 ## 0.2.0
 
 - Five commands: `/keptley:ask`, `/keptley:stale`, `/keptley:changes`, `/keptley:save`,

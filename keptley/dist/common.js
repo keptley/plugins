@@ -64,10 +64,15 @@ export function repoInfo(cwd) {
     };
     const remote = git('remote', 'get-url', 'origin');
     const branch = git('rev-parse', '--abbrev-ref', 'HEAD');
+    // The commit the session ended on. It is the only thing that ties a session to work that reached
+    // the repository: without it every AI change is recorded as the person who pushed it, which is what
+    // the ledger did for its first 348 entries (#400).
+    const headSha = git('rev-parse', 'HEAD');
     const match = remote ? /[:/]([^/]+\/[^/]+?)(?:\.git)?$/.exec(remote) : null;
     return {
         ...(match?.[1] ? { repo: match[1] } : {}),
         ...(branch && branch !== 'HEAD' ? { branch } : {}),
+        ...(headSha ? { headSha } : {}),
     };
 }
 /**

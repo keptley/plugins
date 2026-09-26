@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- The session reports the commit it ended on, which is what ties the work it did to what reached
+  your repository. Without it every AI change was recorded against whoever pushed it.
+- The session's own summary becomes the reason in the change ledger, so "what changed" is finally
+  answered by "and why".
+
 ## 0.3.0
 
 - A session is told when the `CLAUDE.md` it is reading is not the version the team has: which

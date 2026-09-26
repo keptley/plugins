@@ -76,6 +76,41 @@ export function repoInfo(cwd) {
     };
 }
 /**
+ * Who is running this session, from the local git identity.
+ *
+ * A token issued for a workspace rather than for a person names nobody, so every session under one was
+ * recorded as `(unknown)` and counted towards nobody's seat (#143). `user.email` is what git already
+ * puts on every commit this session makes, and Keptley only ever uses it to match somebody already in
+ * the workspace: it never creates a person from it.
+ *
+ * Best effort and silent. A machine with no git identity sends nothing and the session stays unnamed,
+ * which is the honest answer.
+ */
+export function gitAuthor(cwd) {
+    const config = (key) => {
+        try {
+            return execFileSync('git', ['config', '--get', key], {
+                cwd,
+                encoding: 'utf8',
+                stdio: ['ignore', 'pipe', 'ignore'],
+            }).trim();
+        }
+        catch {
+            return null;
+        }
+    };
+    const email = config('user.email');
+    const name = config('user.name');
+    if (!email && !name)
+        return {};
+    return {
+        author: {
+            ...(email ? { email } : {}),
+            ...(name ? { name } : {}),
+        },
+    };
+}
+/**
  * The guidance files this session is reading, as repository-relative path and hash.
  *
  * Hashes, never content. These files are edited locally long before anybody else sees them, and a

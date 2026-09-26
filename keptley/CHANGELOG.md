@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- A session says who is running it, from the git identity already on your commits. A token issued for
+  a workspace rather than for a person named nobody, so the work every session did was recorded
+  against `(unknown)` and counted towards nobody's seat. Keptley matches the address to somebody
+  already in your workspace and never creates a person from it.
+
 ## 0.4.0
 
 - The session reports the commit it ended on, which is what ties the work it did to what reached

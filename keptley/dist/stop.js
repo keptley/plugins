@@ -1,4 +1,4 @@
-import { readHookInput, post, repoInfo } from './common.js';
+import { readHookInput, post, repoInfo, gitAuthor } from './common.js';
 /** Stop: send the session summary to the ledger. The worker folds it into pages. */
 const input = await readHookInput();
 if (!input.stop_hook_active) {
@@ -8,6 +8,7 @@ if (!input.stop_hook_active) {
         transcriptPath: input.transcript_path ?? null,
         endedAt: new Date().toISOString(),
         ...repoInfo(input.cwd),
+        ...gitAuthor(input.cwd),
     });
 }
 //# sourceMappingURL=stop.js.map

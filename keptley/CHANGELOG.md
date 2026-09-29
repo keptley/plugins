@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
+- `/keptley:book` reads the team's compiled handbook, or one chapter of it, through the new
+  `keptley_book` and `keptley_chapter` tools. A chapter is compiled from rows, so the command tells
+  Claude to read it rather than paraphrase it: a summary of a table is a number nobody can check. Asked
+  for the sections of a chapter, it follows each marker to what it was compiled from — the page at the
+  version the chapter pinned, the diagram version, the pull requests, or the numbers a count counted.
+
 ## 0.5.0
 
 - A session says who is running it, from the git identity already on your commits. A token issued for

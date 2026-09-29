@@ -2,6 +2,10 @@
 
 ## 0.7.0
 
+- A session in a repository Keptley does not know is recorded under _Written here_ instead of being
+  refused: the files it edited, the commands it ran and the documents it produced. Before this, a new
+  checkout or a repository nobody had connected lost everything the session did. The repository's name
+  is not recorded, and `PRIVACY.md` says how to keep a project out of it entirely.
 - Nothing a session did is lost because the server could not be reached. A capture that fails for a
   reason that might pass — no network, a timeout, a server that is restarting — is kept in
   `~/.keptley/outbox` and sent at the next hook or the next session start, oldest first, with the time

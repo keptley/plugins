@@ -31,6 +31,14 @@ than fourteen days, at most 500 captures are held, and what the server refuses i
 tried again. Delete the directory at any time: the plugin makes it again when it needs it and loses
 only what was waiting.
 
+## A repository Keptley does not know
+
+The plugin runs per user account, so it also runs in projects your workspace has not connected. A session
+there is recorded under _Written here_ — the paths it edited, the commands it ran, the documents it
+produced — so nothing a session makes is lost. The name of the repository is not recorded and no
+repository is created from it. For a project you do not want recorded at all, leave `KEPTLEY_TOKEN` unset
+for it: with no token the hooks exit immediately.
+
 ## What it does not send
 
 - File contents the session did not touch or you did not save.

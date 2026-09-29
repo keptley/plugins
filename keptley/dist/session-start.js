@@ -1,4 +1,4 @@
-import { readHookInput, config, guidanceFiles, repoInfo, gitAuthor } from './common.js';
+import { flushOutbox, readHookInput, config, guidanceFiles, repoInfo, gitAuthor, } from './common.js';
 /**
  * SessionStart: inject org context, and check the session's CLAUDE.md files against the team's.
  *
@@ -11,6 +11,9 @@ import { readHookInput, config, guidanceFiles, repoInfo, gitAuthor } from './com
 const input = await readHookInput();
 const { apiUrl, token } = config();
 if (token) {
+    // A laptop that was asleep, on a plane or behind bad wifi yesterday sends what it kept, before this
+    // session adds anything of its own (#564).
+    await flushOutbox({ max: 50, budgetMs: 6_000 });
     try {
         const res = await fetch(new URL('/v1/context', apiUrl), {
             method: 'POST',

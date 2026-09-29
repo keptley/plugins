@@ -1,4 +1,4 @@
-import { readHookInput, post, postToolUseContext, repoInfo } from './common.js';
+import { flushOutbox, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
 const input = await readHookInput();
 const tool = input.tool_name ?? '';
@@ -22,8 +22,9 @@ async function captureDocument(input) {
             cwd: input.cwd,
             url: artifact[0],
             title: str(input.tool_input?.['title']) || undefined,
+            occurredAt: new Date().toISOString(),
             ...repo,
-        });
+        }, { keep: true });
         return;
     }
     // A markdown file written outside the repository.
@@ -35,8 +36,9 @@ async function captureDocument(input) {
             cwd: input.cwd,
             filePath,
             body,
+            occurredAt: new Date().toISOString(),
             ...repo,
-        });
+        }, { keep: true });
     }
 }
 const subject = kind === 'command' ? str(input.tool_input?.['command']) : str(input.tool_input?.['file_path']);
@@ -50,10 +52,14 @@ if (subject) {
         subject,
         occurredAt: new Date().toISOString(),
         ...repoInfo(input.cwd),
-    }));
+    }, { keep: true }));
     // A page describes the file just edited: tell Claude, once per page per session.
     const out = postToolUseContext(reply?.notice);
     if (out)
         process.stdout.write(out);
+    // The api just answered, so anything kept while it could not be reached can go now (#564). Only on
+    // evidence that it is up: retrying into a dead api on every tool call would slow every session down.
+    if (reply !== null)
+        await flushOutbox({ max: 10, budgetMs: 2_000 });
 }
 //# sourceMappingURL=post-tool-use.js.map

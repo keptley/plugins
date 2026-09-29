@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0
+
+- Nothing a session did is lost because the server could not be reached. A capture that fails for a
+  reason that might pass — no network, a timeout, a server that is restarting — is kept in
+  `~/.keptley/outbox` and sent at the next hook or the next session start, oldest first, with the time
+  it happened rather than the time it arrived. A capture the server refused on its own terms is not
+  kept, because tomorrow it is refused again. The outbox holds at most 500 captures, nothing older than
+  a fortnight, and never your token; `PRIVACY.md` says so in the same words.
+
 ## 0.6.0
 
 - `/keptley:book` reads the team's compiled handbook, or one chapter of it, through the new

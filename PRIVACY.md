@@ -1,6 +1,6 @@
 # Privacy
 
-How the Keptley plugin handles your data. Last updated 23 September 2026.
+How the Keptley plugin handles your data. Last updated 29 September 2026.
 
 Keptley is a hosted service for engineering teams. This page covers the Claude Code plugin and the
 editor integrations. Your organisation's agreement with Keptley governs the service itself.
@@ -20,6 +20,16 @@ While a session runs, so that your change ledger can say what happened and why:
 - the questions you ask Keptley, so they can be answered from your pages.
 
 When you explicitly save a page, the content of that page.
+
+## What is kept on your machine
+
+A capture the server could not take is written to `~/.keptley/outbox` and sent at the next hook or the
+next session start, so a laptop on a plane or behind bad wifi does not leave a hole in your change
+ledger. Those files hold the same thing the plugin would have sent — a path, a command, a document you
+published — and never your token, which is read from the environment each time. Nothing is kept longer
+than fourteen days, at most 500 captures are held, and what the server refuses is deleted rather than
+tried again. Delete the directory at any time: the plugin makes it again when it needs it and loses
+only what was waiting.
 
 ## What it does not send
 

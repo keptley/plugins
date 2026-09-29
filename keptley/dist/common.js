@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
+import { flush, keep, waiting } from './outbox.js';
 export async function readHookInput() {
     const raw = readFileSync(0, 'utf8');
     return JSON.parse(raw);
@@ -15,11 +16,29 @@ export function config() {
 /**
  * POST and return the parsed reply, or null. Hooks must never block or fail the session, so every
  * failure (no token, network, timeout, bad JSON) is null, never a throw.
+ *
+ * `keep` is for a capture: when the api cannot be reached, it goes to the outbox and the next hook that
+ * gets through sends it (#564). Without it a capture is lost, which is the one thing a change ledger
+ * cannot afford. A reply is not kept — a notice is worth reading now or not at all.
  */
-export async function post(path, body) {
+export async function post(path, body, opts = {}) {
+    const { outcome, reply } = await send(path, body);
+    if (outcome === 'keep' && opts.keep)
+        keep(path, body);
+    return reply;
+}
+/**
+ * One attempt, and what to do with what came back.
+ *
+ * `keep` means the api might take it later: it could not be reached, it timed out, it answered 5xx, or
+ * it asked to be tried again (408, 425, 429). `drop` means it answered on its own terms — a bad body, a
+ * token without permission — and sending the same thing tomorrow gets the same answer.
+ */
+export async function send(path, body) {
     const { apiUrl, token } = config();
+    // Nothing to send it with, and nothing to send it to later: a machine with no token is not configured.
     if (!token)
-        return null;
+        return { outcome: 'drop', reply: null };
     try {
         const res = await fetch(new URL(path, apiUrl), {
             method: 'POST',
@@ -27,11 +46,29 @@ export async function post(path, body) {
             body: JSON.stringify(body),
             signal: AbortSignal.timeout(8_000),
         });
-        return res.ok ? await res.json() : null;
+        if (res.ok)
+            return { outcome: 'sent', reply: await res.json().catch(() => null) };
+        const again = res.status >= 500 || [408, 425, 429].includes(res.status);
+        if (!again)
+            console.error(`[keptley] ${path}: the api answered ${res.status}`);
+        return { outcome: again ? 'keep' : 'drop', reply: null };
     }
     catch (err) {
         console.error(`[keptley] ${path}: ${err instanceof Error ? err.message : String(err)}`);
-        return null;
+        return { outcome: 'keep', reply: null };
+    }
+}
+/**
+ * Sends what is waiting, if anything is. Called by a hook that has just reached the api, because the api
+ * answering once is the only evidence worth acting on — and by session start, where a laptop that was
+ * asleep yesterday is now online.
+ */
+export async function flushOutbox(opts = {}) {
+    if (waiting() === 0)
+        return;
+    const { sent, dropped, left } = await flush(async (path, body) => (await send(path, body)).outcome, opts);
+    if (sent > 0 || dropped > 0) {
+        console.error(`[keptley] outbox: sent ${sent}${dropped > 0 ? `, dropped ${dropped}` : ''}${left > 0 ? `, ${left} waiting` : ''}`);
     }
 }
 /**

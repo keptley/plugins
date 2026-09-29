@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0
+
+- Every document a session produces says what it is, from where it came from: an artifact, a plan, a
+  note, a document, or a report when `/keptley:save` is told so. Nothing reads the text to decide, so
+  the word beside a document is a fact about where it came from rather than a guess about what it says.
+
 ## 0.8.0
 
 - The file behind an artifact comes with the link. Publishing an artifact sends the `.html` or `.md` it

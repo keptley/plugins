@@ -11,4 +11,6 @@ Save what this session established as a page in Keptley.
    a second one that will contradict it.
 3. Write it as Markdown a new colleague could follow. Commands must be ones we actually ran.
 4. Show it to me. Only after I approve, call `keptley_save_doc`, with a one-line reason for the
-   page history.
+   page history — and with `kind` when you know what this is by where it came from: `report` for
+   something I asked you to write up, `plan` for a plan, `note` for a working note. Say nothing rather
+   than guessing: a wrong badge on a page is worse than none.

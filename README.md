@@ -88,14 +88,15 @@ changed, who or which session changed it, and why.
 
 Typed in Claude Code, these do the whole job rather than leaving you to phrase it:
 
-| Command                   | What it does                                                                  |
-| ------------------------- | ----------------------------------------------------------------------------- |
-| `/keptley:ask <question>` | Answers from your pages with sources, or says who to ask                      |
-| `/keptley:stale`          | Pages a merged change may have made wrong, worst first, and offers to fix one |
-| `/keptley:changes [7d]`   | What changed lately, by people and by AI, and why                             |
-| `/keptley:save [path]`    | Saves what the session worked out as a page, after you approve it             |
-| `/keptley:status [role]`  | Where the work stands, including what is merged with no page changed          |
-| `/keptley:book [chapter]` | Reads your team's compiled handbook, and follows any line back to its rows    |
+| Command                    | What it does                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `/keptley:ask <question>`  | Answers from your pages with sources, or says who to ask                        |
+| `/keptley:stale`           | Pages a merged change may have made wrong, worst first, and offers to fix one   |
+| `/keptley:changes [7d]`    | What changed lately, by people and by AI, and why                               |
+| `/keptley:save [path]`     | Saves what the session worked out as a page, after you approve it               |
+| `/keptley:status [role]`   | Where the work stands, including what is merged with no page changed            |
+| `/keptley:book [chapter]`  | Reads your team's compiled handbook, and follows any line back to its rows      |
+| `/keptley:produced [kind]` | What your sessions made and nobody committed, and which of it nobody has opened |
 
 Claude also uses Keptley's tools on its own when a question calls for them.
 

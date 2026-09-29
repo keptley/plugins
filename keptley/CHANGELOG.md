@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0
+
+- `/keptley:produced` lists what your team's sessions made and nobody committed — artifacts, documents,
+  notes, plans, reports — newest first, with who made each one and which of them nobody has opened yet.
+  It is the answer to "did somebody already write this?", which until now lived in a terminal scrollback
+  on somebody else's laptop. The same list is available to any editor through the `keptley_produced`
+  tool.
+
 ## 0.9.0
 
 - Every document a session produces says what it is, from where it came from: an artifact, a plan, a

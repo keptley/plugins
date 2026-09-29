@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { flushOutbox, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
 const input = await readHookInput();
@@ -8,6 +9,11 @@ const str = (v) => (typeof v === 'string' ? v : '');
  * A session often produces a document that never reaches the repository: a published artifact, or
  * a note written to a scratch directory. Nobody remembers to save those by hand, so they are
  * captured here from what the session did.
+ *
+ * With an artifact goes **the file it was published from** (#566). The link belongs to whoever published
+ * it — they can edit it, republish it or delete it — so a page carrying only a link says "this existed"
+ * and nothing about what it said. The file is named in the same tool call, is on the laptop for minutes,
+ * and is what Keptley can still show.
  */
 async function captureDocument(input) {
     const repo = repoInfo(input.cwd);
@@ -23,6 +29,7 @@ async function captureDocument(input) {
             url: artifact[0],
             title: str(input.tool_input?.['title']) || undefined,
             occurredAt: new Date().toISOString(),
+            ...publishedFile(str(input.tool_input?.['file_path'])),
             ...repo,
         }, { keep: true });
         return;
@@ -39,6 +46,27 @@ async function captureDocument(input) {
             occurredAt: new Date().toISOString(),
             ...repo,
         }, { keep: true });
+    }
+}
+/**
+ * The file an artifact was published from, read from disk (#566).
+ *
+ * Only what Keptley keeps — `.html`, `.md`, `.txt` — and only up to two megabytes, which is what a
+ * rendered artifact reasonably is. Anything else is left behind silently rather than half-sent: the link
+ * is still captured, and a page with a link and no file is what the page was before this existed.
+ */
+function publishedFile(filePath) {
+    if (!/\.(html?|md|markdown|txt)$/i.test(filePath))
+        return {};
+    try {
+        const body = readFileSync(filePath, 'utf8');
+        if (!body || Buffer.byteLength(body, 'utf8') > 2 * 1024 * 1024)
+            return {};
+        return { file: { name: filePath.split('/').pop() ?? filePath, body } };
+    }
+    catch {
+        // Written to a temporary directory and already gone, or not readable. Nothing to send.
+        return {};
     }
 }
 const subject = kind === 'command' ? str(input.tool_input?.['command']) : str(input.tool_input?.['file_path']);

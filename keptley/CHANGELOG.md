@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+- The file behind an artifact comes with the link. Publishing an artifact sends the `.html` or `.md` it
+  was published from, and Keptley keeps it against that version of the page: the link belongs to whoever
+  published it and can be edited or deleted, and a page carrying only a link says "this existed" and
+  nothing about what it said. Only `.html`, `.md` and `.txt`, only up to 2 MB, only the file named in that
+  publish — `PRIVACY.md` says exactly that.
+
 ## 0.7.0
 
 - A session in a repository Keptley does not know is recorded under _Written here_ instead of being

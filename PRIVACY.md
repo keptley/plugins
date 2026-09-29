@@ -21,6 +21,12 @@ While a session runs, so that your change ledger can say what happened and why:
 
 When you explicitly save a page, the content of that page.
 
+When a session publishes an artifact, the file it was published from — the `.html` or `.md` that was just
+written — so the page can still show what the artifact said after the artifact itself is edited or
+deleted. Only `.html`, `.md` and `.txt`, only up to 2 MB, and only the file named in that publish: never
+the directory around it. The file is stored privately in your organisation's own bucket and is handed
+back only to your organisation, over the api.
+
 ## What is kept on your machine
 
 A capture the server could not take is written to `~/.keptley/outbox` and sent at the next hook or the

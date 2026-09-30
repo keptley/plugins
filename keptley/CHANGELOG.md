@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0
+
+- `/keptley:ask` says plainly when no page covers a question, and names who to ask, with nothing cited.
+  It used to answer from whatever search found, so a page that only shared a word with the question —
+  an on-call handover page, asked about the on-call allowance — could come back as "the pages do not
+  mention an allowance", with that page cited under it. It now asks `keptley_ask`, which reads the pages
+  and decides, and keeps to what it says.
+
 ## 0.10.0
 
 - `/keptley:produced` lists what your team's sessions made and nobody committed — artifacts, documents,

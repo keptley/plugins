@@ -108,12 +108,12 @@ The plugin sends your organisation's Keptley server, and nothing else:
   current commit; your git name and email, used only to match you to a member of your workspace; and
   the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents.
 - **After each edit:** the path of the file edited, never its contents.
-- **After each command:** the command as it was run. The server masks what looks like a secret before
-  keeping it.
+- **After each command:** the command, with what looks like a secret masked on your machine before it
+  is sent. The server masks again before keeping it.
 - **When a session publishes an artifact:** its link and title, and the `.html`, `.md` or `.txt` file
   it was published from, up to 2 MB. **When a session writes a Markdown file outside the working
-  directory:** that file's path and contents. Both only in a git repository; the server masks what
-  looks like a secret before keeping them.
+  directory:** that file's path and contents. Both only in a git repository; what looks like a secret
+  is masked before they are sent, and again before they are kept.
 - **When a session ends:** that it ended, with the repository, branch, commit and your git identity,
   and the path of the session's transcript on your machine, never the transcript.
 

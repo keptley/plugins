@@ -19,8 +19,8 @@ While a session runs, so that your change ledger can say what happened and why:
 - your git name and email, used only to match you to a member of your workspace: Keptley never creates
   a person from them,
 - the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents,
-- the paths of files the session edited, and the commands it ran, as they were run; the server masks
-  what looks like a secret in a command before keeping it,
+- the paths of files the session edited, and the commands it ran; what looks like a secret in a command
+  is masked on your machine before it is sent, and again by the server before it is kept,
 - at the end, that the session ended, and the path of its transcript on your machine, never the
   transcript itself,
 - the questions you ask Keptley, so they can be answered from your pages.
@@ -33,8 +33,8 @@ When a session publishes an artifact, the file it was published from — the `.h
 written — so the page can still show what the artifact said after the artifact itself is edited or
 deleted. Only `.html`, `.md` and `.txt`, only up to 2 MB, and only the file named in that publish: never
 the directory around it. The file is stored privately in your organisation's own bucket and is handed
-back only to your organisation, over the api. Before any document or file is kept, the server masks what
-looks like a secret in it.
+back only to your organisation, over the api. What looks like a secret in a document or file is masked on
+your machine before it is sent, and again by the server before it is kept.
 
 ## What is kept on your machine
 

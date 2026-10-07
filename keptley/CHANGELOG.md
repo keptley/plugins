@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.2
+
+- A secret in a command is masked on your machine, before the command is sent and before it waits in
+  the outbox while Keptley cannot be reached: an AWS key, a GitHub or Slack token, a bearer header, a
+  `--password=` flag, a `TOKEN=…` assignment, and the other shapes the server already recognised. Documents
+  and artifacts are masked the same way. Until now they were masked only once they reached the server, so
+  they travelled, and waited in the outbox, as typed. The server still masks too. A secret with no
+  recognisable shape and no name in front of it is still not caught.
+
 ## 0.11.1
 
 - What waits on your machine while Keptley cannot be reached is yours alone. The outbox folder

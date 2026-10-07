@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { flushOutbox, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
+import { redactCommand, redactSecrets } from './masking.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
 const input = await readHookInput();
 const tool = input.tool_name ?? '';
@@ -27,7 +28,7 @@ async function captureDocument(input) {
             sessionId: input.session_id,
             cwd: input.cwd,
             url: artifact[0],
-            title: str(input.tool_input?.['title']) || undefined,
+            title: redactSecrets(str(input.tool_input?.['title'])) || undefined,
             occurredAt: new Date().toISOString(),
             ...publishedFile(str(input.tool_input?.['file_path'])),
             ...repo,
@@ -42,7 +43,7 @@ async function captureDocument(input) {
             sessionId: input.session_id,
             cwd: input.cwd,
             filePath,
-            body,
+            body: redactSecrets(body),
             occurredAt: new Date().toISOString(),
             ...repo,
         }, { keep: true });
@@ -62,14 +63,17 @@ function publishedFile(filePath) {
         const body = readFileSync(filePath, 'utf8');
         if (!body || Buffer.byteLength(body, 'utf8') > 2 * 1024 * 1024)
             return {};
-        return { file: { name: filePath.split('/').pop() ?? filePath, body } };
+        return { file: { name: filePath.split('/').pop() ?? filePath, body: redactSecrets(body) } };
     }
     catch {
         // Written to a temporary directory and already gone, or not readable. Nothing to send.
         return {};
     }
 }
-const subject = kind === 'command' ? str(input.tool_input?.['command']) : str(input.tool_input?.['file_path']);
+// A command is masked here, before it is sent or kept in the outbox (#1498), by the server's own rules.
+const subject = kind === 'command'
+    ? redactCommand(str(input.tool_input?.['command']))
+    : str(input.tool_input?.['file_path']);
 await captureDocument(input);
 if (subject) {
     const reply = (await post('/v1/ledger/events', {

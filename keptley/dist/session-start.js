@@ -1,4 +1,4 @@
-import { flushOutbox, readHookInput, config, guidanceFiles, repoInfo, gitAuthor, } from './common.js';
+import { flushOutbox, readHookInput, config, guidanceFiles, home, repoInfo, gitAuthor, } from './common.js';
 import { tidy } from './outbox.js';
 /**
  * SessionStart: inject org context, and check the session's CLAUDE.md files against the team's.
@@ -22,7 +22,7 @@ if (token) {
             method: 'POST',
             headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
             body: JSON.stringify({
-                cwd: input.cwd,
+                cwd: home(input.cwd),
                 sessionId: input.session_id,
                 ...repoInfo(input.cwd),
                 ...gitAuthor(input.cwd),

@@ -104,18 +104,19 @@ Claude also uses Keptley's tools on its own when a question calls for them.
 
 The plugin sends your organisation's Keptley server, and nothing else:
 
-- **When a session starts:** the working directory; the repository (from git's `origin`), branch and
+- **When a session starts:** the working directory, as `~/…` under your home directory; the repository (from git's `origin`), branch and
   current commit; your git name and email, used only to match you to a member of your workspace; and
   the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents.
-- **After each edit:** the path of the file edited, never its contents.
+- **After each edit:** the path of the file edited (as `~/…` under your home directory), never its
+  contents.
 - **After each command:** the command, with what looks like a secret masked on your machine before it
   is sent. The server masks again before keeping it.
 - **When a session publishes an artifact:** its link and title, and the `.html`, `.md` or `.txt` file
   it was published from, up to 2 MB. **When a session writes a Markdown file outside the working
   directory:** that file's path and contents. Both only in a git repository; what looks like a secret
   is masked before they are sent, and again before they are kept.
-- **When a session ends:** that it ended, with the repository, branch, commit and your git identity,
-  and the path of the session's transcript on your machine, never the transcript.
+- **When a session ends:** that it ended, with the repository, branch, commit and your git identity;
+  never the transcript, and not where it is on your machine.
 
 That record is what the change ledger is made of, and only your organisation can read it. A session in
 a repository your workspace has not connected is kept only if your workspace has turned that on.

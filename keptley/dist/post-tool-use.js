@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { flushOutbox, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
+import { flushOutbox, home, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
 import { redactCommand, redactSecrets } from './masking.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
 const input = await readHookInput();
@@ -26,7 +26,7 @@ async function captureDocument(input) {
     if (artifact) {
         await post('/v1/documents', {
             sessionId: input.session_id,
-            cwd: input.cwd,
+            cwd: home(input.cwd),
             url: artifact[0],
             title: redactSecrets(str(input.tool_input?.['title'])) || undefined,
             occurredAt: new Date().toISOString(),
@@ -41,8 +41,8 @@ async function captureDocument(input) {
     if (filePath.match(/\.mdx?$/i) && body && !filePath.startsWith(input.cwd)) {
         await post('/v1/documents', {
             sessionId: input.session_id,
-            cwd: input.cwd,
-            filePath,
+            cwd: home(input.cwd),
+            filePath: home(filePath),
             body: redactSecrets(body),
             occurredAt: new Date().toISOString(),
             ...repo,
@@ -73,12 +73,12 @@ function publishedFile(filePath) {
 // A command is masked here, before it is sent or kept in the outbox (#1498), by the server's own rules.
 const subject = kind === 'command'
     ? redactCommand(str(input.tool_input?.['command']))
-    : str(input.tool_input?.['file_path']);
+    : home(str(input.tool_input?.['file_path']));
 await captureDocument(input);
 if (subject) {
     const reply = (await post('/v1/ledger/events', {
         sessionId: input.session_id,
-        cwd: input.cwd,
+        cwd: home(input.cwd),
         tool,
         kind,
         subject,

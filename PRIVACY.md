@@ -14,15 +14,16 @@ you configured. It sends nothing to anyone else, and Keptley does not sell or sh
 
 While a session runs, so that your change ledger can say what happened and why:
 
-- the working directory, the repository (from git's `origin`) and branch you are working in, and the
-  current commit,
+- the working directory, written `~/…` when it is under your home directory, so your username stays on
+  your machine; the repository (from git's `origin`) and branch you are working in; and the current
+  commit,
 - your git name and email, used only to match you to a member of your workspace: Keptley never creates
   a person from them,
 - the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents,
-- the paths of files the session edited, and the commands it ran; what looks like a secret in a command
-  is masked on your machine before it is sent, and again by the server before it is kept,
-- at the end, that the session ended, and the path of its transcript on your machine, never the
-  transcript itself,
+- the paths of files the session edited (as `~/…` under your home directory), and the commands it ran;
+  what looks like a secret in a command is masked on your machine before it is sent, and again by the
+  server before it is kept,
+- at the end, that the session ended; never the transcript, and not where it is on your machine,
 - the questions you ask Keptley, so they can be answered from your pages.
 
 When you explicitly save a page, the content of that page. When a session writes a Markdown file

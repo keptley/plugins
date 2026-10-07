@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.3
+
+- Your username stays on your machine. The working directory, an edited file's path and a note's path
+  are sent as `~/…` when they are under your home directory, instead of `/Users/<you>/…`. Keptley only
+  ever used them to tell what is inside the repository, and it still does. The session transcript's
+  path is no longer sent at all: nothing read it.
+
 ## 0.11.2
 
 - A secret in a command is masked on your machine, before the command is sent and before it waits in

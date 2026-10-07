@@ -1,11 +1,25 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { relative, resolve } from 'node:path';
+import { homedir } from 'node:os';
+import { relative, resolve, sep } from 'node:path';
 import { flush, keep, waiting } from './outbox.js';
 export async function readHookInput() {
     const raw = readFileSync(0, 'utf8');
     return JSON.parse(raw);
+}
+/**
+ * A path as it is sent (#1499): under the home directory it starts with `~`, so the person's username
+ * (`/Users/<name>/…`) stays on their machine. The server only ever compares a session's paths with each
+ * other, by prefix, so it needs every path in the same form, not the real one: the working directory and
+ * an edited file are both sent through here. The real path is still what git and the disk are asked.
+ */
+export function home(path, dir = homedir()) {
+    if (!path || !dir || dir === sep)
+        return path;
+    if (path === dir)
+        return '~';
+    return path.startsWith(dir + sep) ? `~${path.slice(dir.length)}` : path;
 }
 export function config() {
     return {

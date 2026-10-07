@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.4
+
+- A Markdown file a session writes outside the repository, a plan or a note, stays on your machine
+  unless your workspace keeps them. A lead turns that on in settings; it is off for every workspace
+  until then. The plugin asks when a session starts, and when it gets no answer it sends none. Before,
+  any such file's path and contents were uploaded. What the session starts with is remembered for the
+  session in `~/.keptley/sessions`, readable only by you, holding only that setting, and removed when the
+  session ends.
+- `KEPTLEY_OUTBOX_DIR` or `KEPTLEY_SESSIONS_DIR` set to nothing, to spaces or to a relative path now
+  counts as unset, and the plugin uses `~/.keptley`. Before, it would write its private files into the
+  repository the session was in. `KEPTLEY_API_URL` set to nothing falls back to the hosted api.
+
 ## 0.11.3
 
 - Your username stays on your machine. The working directory, an edited file's path and a note's path

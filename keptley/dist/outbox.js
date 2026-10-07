@@ -2,6 +2,7 @@ import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, st
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { dirFromEnv } from './env-dir.js';
 const MAX_KEPT = 500;
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
 /**
@@ -25,7 +26,7 @@ function stamp() {
     return String(last).padStart(14, '0');
 }
 export function outboxDir() {
-    return process.env['KEPTLEY_OUTBOX_DIR'] ?? join(homedir(), '.keptley', 'outbox');
+    return dirFromEnv('KEPTLEY_OUTBOX_DIR', () => join(homedir(), '.keptley', 'outbox'));
 }
 /** Keeps one capture. Silent on failure: a hook that cannot write to disk still must not fail. */
 export function keep(path, body) {

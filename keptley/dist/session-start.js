@@ -1,5 +1,6 @@
 import { flushOutbox, readHookInput, config, guidanceFiles, home, repoInfo, gitAuthor, } from './common.js';
 import { tidy } from './outbox.js';
+import { remember } from './session-state.js';
 /**
  * SessionStart: inject org context, and check the session's CLAUDE.md files against the team's.
  *
@@ -33,7 +34,11 @@ if (token) {
             signal: AbortSignal.timeout(10_000),
         });
         if (res.ok) {
-            const { context } = (await res.json());
+            const { context, notesOutside } = (await res.json());
+            // What this workspace lets the session upload (#1545), for the hooks after this one. An older api
+            // says nothing, and nothing is remembered: the session then uploads no notes from outside.
+            if (typeof notesOutside === 'boolean')
+                remember(input.session_id, { notesOutside });
             process.stdout.write(JSON.stringify({
                 hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: context },
             }));

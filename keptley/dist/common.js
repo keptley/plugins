@@ -23,7 +23,8 @@ export function home(path, dir = homedir()) {
 }
 export function config() {
     return {
-        apiUrl: process.env['KEPTLEY_API_URL'] ?? 'https://api.keptley.com',
+        // Empty or spaces is unset, like the directories (env-dir.ts): `KEPTLEY_API_URL=` must not break every hook.
+        apiUrl: process.env['KEPTLEY_API_URL']?.trim() || 'https://api.keptley.com',
         token: process.env['KEPTLEY_TOKEN'],
     };
 }

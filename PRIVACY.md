@@ -27,8 +27,9 @@ While a session runs, so that your change ledger can say what happened and why:
 - the questions you ask Keptley, so they can be answered from your pages.
 
 When you explicitly save a page, the content of that page. When a session writes a Markdown file
-outside the working directory, such as a plan or a note, its path and contents, so the documents a
-session produces are not lost; only in a git repository.
+outside the working directory, such as a plan or a note, its path and contents, but only if your
+workspace keeps those: a lead turns that on in settings, and it is off until then. The plugin asks at
+the start of each session, and sends no such file when it gets no answer. Only in a git repository.
 
 When a session publishes an artifact, the file it was published from — the `.html` or `.md` that was just
 written — so the page can still show what the artifact said after the artifact itself is edited or
@@ -47,6 +48,10 @@ than fourteen days, at most 500 captures are held, and what the server refuses i
 tried again. Delete the directory at any time: the plugin makes it again when it needs it and loses
 only what was waiting.
 
+Whether your workspace keeps notes written outside the repository is remembered for the session in
+`~/.keptley/sessions`: one small file per session, readable only by you, holding that setting and
+nothing else, removed when the session ends and after a day in any case.
+
 ## A repository Keptley does not know
 
 The plugin runs per user account, so it also runs in projects your workspace has not connected, and
@@ -59,8 +64,8 @@ for it.
 ## What it does not send
 
 - The contents of files the session edited or read. Only what is listed above: a page you save, the
-  file an artifact was published from, and a Markdown file the session wrote outside the working
-  directory.
+  file an artifact was published from, and, when your workspace keeps those, a Markdown file the
+  session wrote outside the working directory.
 - Your environment variables or credentials. The token is sent as the request's credential and never
   written to disk.
 - The session's transcript.

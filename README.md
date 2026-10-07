@@ -113,7 +113,8 @@ The plugin sends your organisation's Keptley server, and nothing else:
   is sent. The server masks again before keeping it.
 - **When a session publishes an artifact:** its link and title, and the `.html`, `.md` or `.txt` file
   it was published from, up to 2 MB. **When a session writes a Markdown file outside the working
-  directory:** that file's path and contents. Both only in a git repository; what looks like a secret
+  directory:** that file's path and contents, only if your workspace keeps those (a lead's setting, off
+  until turned on). Both only in a git repository; what looks like a secret
   is masked before they are sent, and again before they are kept.
 - **When a session ends:** that it ended, with the repository, branch, commit and your git identity;
   never the transcript, and not where it is on your machine.

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { flushOutbox, home, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
 import { redactCommand, redactSecrets } from './masking.js';
+import { recall } from './session-state.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
 const input = await readHookInput();
 const tool = input.tool_name ?? '';
@@ -35,10 +36,14 @@ async function captureDocument(input) {
         }, { keep: true });
         return;
     }
-    // A markdown file written outside the repository.
+    // A markdown file written outside the repository: only when the workspace keeps those (#1545), as the
+    // api said when this session started. Not known (no answer, an older api) is not yes.
     const filePath = str(input.tool_input?.['file_path']);
     const body = str(input.tool_input?.['content']);
-    if (filePath.match(/\.mdx?$/i) && body && !filePath.startsWith(input.cwd)) {
+    if (filePath.match(/\.mdx?$/i) &&
+        body &&
+        !filePath.startsWith(input.cwd) &&
+        recall(input.session_id)?.notesOutside === true) {
         await post('/v1/documents', {
             sessionId: input.session_id,
             cwd: home(input.cwd),

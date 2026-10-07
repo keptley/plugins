@@ -1,4 +1,5 @@
 import { flushOutbox, readHookInput, config, guidanceFiles, repoInfo, gitAuthor, } from './common.js';
+import { tidy } from './outbox.js';
 /**
  * SessionStart: inject org context, and check the session's CLAUDE.md files against the team's.
  *
@@ -10,6 +11,8 @@ import { flushOutbox, readHookInput, config, guidanceFiles, repoInfo, gitAuthor,
  */
 const input = await readHookInput();
 const { apiUrl, token } = config();
+// The outbox kept within fourteen days and private, with or without a token (#1504).
+tidy();
 if (token) {
     // A laptop that was asleep, on a plane or behind bad wifi yesterday sends what it kept, before this
     // session adds anything of its own (#564).

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.1
+
+- What waits on your machine while Keptley cannot be reached is yours alone. The outbox folder
+  (`~/.keptley/outbox`) is now made readable only by you, and each capture in it too; one made by an
+  earlier version is tightened the next time a session starts. Before, under the usual settings, another
+  user on the same machine could read the commands and documents waiting there.
+- Nothing waits there past fourteen days, even when your laptop stays offline or you remove your token.
+  Until now that limit was applied only when the server was reached.
+
 ## 0.11.0
 
 - `/keptley:ask` says plainly when no page covers a question, and names who to ask, with nothing cited.

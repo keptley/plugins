@@ -64,8 +64,8 @@ guessing.
 a page describes, Claude says the page may now be wrong and offers to update it. It never edits a
 page without you agreeing.
 
-**When a session ends** it sends a summary to the ledger, so the record of your codebase says what
-changed, who or which session changed it, and why.
+**When a session ends** it tells the ledger, so the record of your codebase says what changed, who
+or which session changed it, and why.
 
 **Tools Claude can call**, from any session:
 
@@ -102,13 +102,29 @@ Claude also uses Keptley's tools on its own when a question calls for them.
 
 ## What is sent, and what is not
 
-The plugin sends your organisation's Keptley server: the repository and branch, the files a session
-edited, the commands it ran, and the session summary. That record is what the change ledger is made
-of, and only your organisation can read it.
+The plugin sends your organisation's Keptley server, and nothing else:
 
-It does not send file contents that the session did not touch, your environment, or anything at all
-when `KEPTLEY_TOKEN` is unset. With no token the hooks exit immediately and silently: a missing or
-expired token must never break, slow down or block a session.
+- **When a session starts:** the working directory; the repository (from git's `origin`), branch and
+  current commit; your git name and email, used only to match you to a member of your workspace; and
+  the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents.
+- **After each edit:** the path of the file edited, never its contents.
+- **After each command:** the command as it was run. The server masks what looks like a secret before
+  keeping it.
+- **When a session publishes an artifact:** its link and title, and the `.html`, `.md` or `.txt` file
+  it was published from, up to 2 MB. **When a session writes a Markdown file outside the working
+  directory:** that file's path and contents. Both only in a git repository; the server masks what
+  looks like a secret before keeping them.
+- **When a session ends:** that it ended, with the repository, branch, commit and your git identity,
+  and the path of the session's transcript on your machine, never the transcript.
+
+That record is what the change ledger is made of, and only your organisation can read it. A session in
+a repository your workspace has not connected is kept only if your workspace has turned that on.
+
+It does not send the contents of files the session edited or read, your environment variables, or the
+transcript. With no `KEPTLEY_TOKEN` it sends nothing and keeps nothing: the hooks start, find no token
+and end without a network call. A missing or expired token never breaks, slows down or blocks a
+session. What it keeps on your machine while your server cannot be reached is in
+[PRIVACY.md](PRIVACY.md).
 
 ---
 

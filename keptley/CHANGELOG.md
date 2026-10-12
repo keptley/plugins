@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.5
+
+- With a read-only API key, a session still starts with your workspace's context: its pages, what
+  changed and what is doubted. It is not recorded, and the plugin says so once, when the session
+  starts, with how to get a key that records. Before, a refused key showed nothing at all. Any
+  refusal from Keptley is now logged with its reason, not just its status code.
+
 ## 0.11.4
 
 - A Markdown file a session writes outside the repository, a plan or a note, stays on your machine

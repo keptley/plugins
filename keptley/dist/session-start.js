@@ -1,4 +1,4 @@
-import { flushOutbox, readHookInput, config, guidanceFiles, home, repoInfo, gitAuthor, } from './common.js';
+import { flushOutbox, readHookInput, config, guidanceFiles, home, repoInfo, gitAuthor, refusalOf, } from './common.js';
 import { tidy } from './outbox.js';
 import { remember } from './session-state.js';
 /**
@@ -34,14 +34,29 @@ if (token) {
             signal: AbortSignal.timeout(10_000),
         });
         if (res.ok) {
-            const { context, notesOutside } = (await res.json());
+            const { context, notesOutside, notRecording } = (await res.json());
             // What this workspace lets the session upload (#1545), for the hooks after this one. An older api
             // says nothing, and nothing is remembered: the session then uploads no notes from outside.
             if (typeof notesOutside === 'boolean')
                 remember(input.session_id, { notesOutside });
             process.stdout.write(JSON.stringify({
                 hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: context },
+                // A read-only key (#1789 review): the context is loaded, the session is not recorded, and the
+                // person is told so once, with the api's reason and fix.
+                ...(typeof notRecording === 'string' && notRecording.trim()
+                    ? {
+                        systemMessage: `Keptley loaded this workspace's context but is not recording this session. ${notRecording.trim()}`,
+                    }
+                    : {}),
             }));
+        }
+        else if (res.status === 403) {
+            // Refused, a read-only key above all (#1782): said to the person once, at the start, with the api's
+            // own reason and fix, rather than every hook after it failing where nobody looks.
+            const said = await refusalOf(res);
+            if (said) {
+                process.stdout.write(JSON.stringify({ systemMessage: `Keptley is not recording this session. ${said}` }));
+            }
         }
     }
     catch (err) {

@@ -64,8 +64,11 @@ export async function send(path, body) {
         if (res.ok)
             return { outcome: 'sent', reply: await res.json().catch(() => null) };
         const again = res.status >= 500 || [408, 425, 429].includes(res.status);
-        if (!again)
-            console.error(`[keptley] ${path}: the api answered ${res.status}`);
+        if (!again) {
+            // With the api's reason when it gave one: a read-only key is told how to get one that writes (#1782).
+            const said = res.status === 403 ? await refusalOf(res) : null;
+            console.error(`[keptley] ${path}: the api answered ${res.status}${said ? `: ${said}` : ''}`);
+        }
         return { outcome: again ? 'keep' : 'drop', reply: null };
     }
     catch (err) {
@@ -85,6 +88,11 @@ export async function flushOutbox(opts = {}) {
     if (sent > 0 || dropped > 0) {
         console.error(`[keptley] outbox: sent ${sent}${dropped > 0 ? `, dropped ${dropped}` : ''}${left > 0 ? `, ${left} waiting` : ''}`);
     }
+}
+/** What a refusal says, from the api's own `message`; null when it said nothing readable. */
+export async function refusalOf(res) {
+    const body = (await res.json().catch(() => null));
+    return typeof body?.message === 'string' && body.message.trim() ? body.message.trim() : null;
 }
 /**
  * The hook output that hands text to Claude as context after a tool call. Claude reads it; the

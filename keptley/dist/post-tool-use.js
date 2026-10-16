@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { flushOutbox, home, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
+import { flushOutbox, home, inHomeDotDir, OUTSIDE_THE_REPOSITORY, scrubHomeDotDirs, readHookInput, post, postToolUseContext, repoInfo, } from './common.js';
 import { redactCommand, redactSecrets } from './masking.js';
 import { recall } from './session-state.js';
 /** PostToolUse: capture edits and commands for the change ledger. Never blocks. */
@@ -43,6 +43,8 @@ async function captureDocument(input) {
     if (filePath.match(/\.mdx?$/i) &&
         body &&
         !filePath.startsWith(input.cwd) &&
+        // Claude Code's memory and the rest of a home dot-directory, never, whatever is kept (#2098).
+        !inHomeDotDir(filePath) &&
         recall(input.session_id)?.notesOutside === true) {
         await post('/v1/documents', {
             sessionId: input.session_id,
@@ -64,6 +66,9 @@ async function captureDocument(input) {
 function publishedFile(filePath) {
     if (!/\.(html?|md|markdown|txt)$/i.test(filePath))
         return {};
+    // Not from a home dot-directory (#2098): the link is still captured.
+    if (inHomeDotDir(filePath))
+        return {};
     try {
         const body = readFileSync(filePath, 'utf8');
         if (!body || Buffer.byteLength(body, 'utf8') > 2 * 1024 * 1024)
@@ -76,9 +81,14 @@ function publishedFile(filePath) {
     }
 }
 // A command is masked here, before it is sent or kept in the outbox (#1498), by the server's own rules.
+// A path under a home dot-directory is not named (#2098): Claude Code's memory files are titled by their names.
+const edited = str(input.tool_input?.['file_path']);
 const subject = kind === 'command'
-    ? redactCommand(str(input.tool_input?.['command']))
-    : home(str(input.tool_input?.['file_path']));
+    ? // A command's secrets are masked (#1498), and any path into a hidden home folder taken out (#2109 review).
+        scrubHomeDotDirs(redactCommand(str(input.tool_input?.['command'])))
+    : inHomeDotDir(edited)
+        ? OUTSIDE_THE_REPOSITORY
+        : home(edited);
 await captureDocument(input);
 if (subject) {
     const reply = (await post('/v1/ledger/events', {

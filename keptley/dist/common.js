@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { relative, resolve, sep } from 'node:path';
+import { posix, relative, resolve, sep } from 'node:path';
 import { flush, keep, waiting } from './outbox.js';
 export async function readHookInput() {
     const raw = readFileSync(0, 'utf8');
@@ -21,6 +21,51 @@ export function home(path, dir = homedir()) {
         return '~';
     return path.startsWith(dir + sep) ? `~${path.slice(dir.length)}` : path;
 }
+/** What the ledger says instead of a path under a home dot-directory (#2098). */
+export const OUTSIDE_THE_REPOSITORY = 'a file outside the repository';
+/**
+ * A file under a dot-directory in the home directory: `~/.claude/**` (Claude Code's memory, settings and
+ * transcripts), `~/.ssh`, `~/.aws`, `~/.config` and the rest (#2098). Never documentation, whatever the
+ * workspace keeps, so nothing in one is uploaded, and its path is not named in the ledger.
+ *
+ * The same rule as core's `inHomeDotDir` (packages/core/src/home-paths.ts), copied byte for byte because the
+ * plugin ships alone, and held to it by the same cases (home-paths.cases.json): the path normalised first
+ * (backslashes, repeated slashes, `.` and `..`), then the home shapes matched in any case, as macOS and
+ * Windows match them (#2109 review). This machine's own home directory counts too, whatever its name.
+ */
+export function inHomeDotDir(path, dir = homedir()) {
+    if (!path)
+        return false;
+    const p = normalisedPath(path);
+    if (HOME_DOT_DIR.some((shape) => shape.test(p)))
+        return true;
+    if (!dir || dir === sep)
+        return false;
+    const home = normalisedPath(dir).replace(/\/$/, '').toLowerCase();
+    const lower = p.toLowerCase();
+    if (!lower.startsWith(`${home}/`))
+        return false;
+    return /^\.[^/]+\//.test(p.slice(home.length + 1));
+}
+/**
+ * A command with every path into a home dot-directory taken out, the rest kept: as core's `scrubHomeDotDirs`
+ * (#2109 review). A token is what lies between whitespace, quotes and `=`.
+ */
+export function scrubHomeDotDirs(command, dir = homedir()) {
+    return command.replace(/[^\s'"`=]+/g, (token) => inHomeDotDir(token, dir) ? '<a file outside the repository>' : token);
+}
+/** Backslashes as slashes, runs of slashes as one, `.` and `..` resolved: as core's `normalisedPath`. */
+export function normalisedPath(path) {
+    const slashed = path.replace(/\\/g, '/').replace(/\/{2,}/g, '/');
+    return slashed ? posix.normalize(slashed) : slashed;
+}
+/** As core's: home dot-directories by shape, in any case. */
+const HOME_DOT_DIR = [
+    /^~\/\.[^/]+\//,
+    /^\/(?:users|home)\/[^/]+\/\.[^/]+\//i,
+    /^\/root\/\.[^/]+\//i,
+    /^[a-z]:\/users\/[^/]+\/\.[^/]+\//i,
+];
 export function config() {
     return {
         // Empty or spaces is unset, like the directories (env-dir.ts): `KEPTLEY_API_URL=` must not break every hook.

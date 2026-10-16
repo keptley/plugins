@@ -20,7 +20,9 @@ While a session runs, so that your change ledger can say what happened and why:
 - your git name and email, used only to match you to a member of your workspace: Keptley never creates
   a person from them,
 - the paths and SHA-256 hashes of the repository's `CLAUDE.md` files, never their contents,
-- the paths of files the session edited (as `~/…` under your home directory), and the commands it ran;
+- the paths of files the session edited (as `~/…` under your home directory), but never the path of a
+  file in a hidden folder of your home directory, such as `~/.claude`, which is recorded only as "a file
+  outside the repository"; and the commands it ran;
   what looks like a secret in a command is masked on your machine before it is sent, and again by the
   server before it is kept,
 - at the end, that the session ended; never the transcript, and not where it is on your machine,
@@ -29,7 +31,9 @@ While a session runs, so that your change ledger can say what happened and why:
 When you explicitly save a page, the content of that page. When a session writes a Markdown file
 outside the working directory, such as a plan or a note, its path and contents, but only if your
 workspace keeps those: a lead turns that on in settings, and it is off until then. The plugin asks at
-the start of each session, and sends no such file when it gets no answer. Only in a git repository.
+the start of each session, and sends no such file when it gets no answer. Only in a git repository, and
+never from a hidden folder of your home directory, such as `~/.claude`, where Claude Code keeps its own
+memory: nothing there is sent, whatever your workspace keeps.
 
 When a session publishes an artifact, the file it was published from — the `.html` or `.md` that was just
 written — so the page can still show what the artifact said after the artifact itself is edited or

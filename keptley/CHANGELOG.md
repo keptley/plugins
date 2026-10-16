@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.6
+
+- Nothing in a hidden folder of your home directory is sent, whatever your workspace keeps: not
+  `~/.claude`, where Claude Code keeps its own memory, and not `~/.ssh`, `~/.config` or the like. A note
+  written there stays on your machine, an artifact published from a file there keeps only its link,
+  and an edit there is recorded as "a file outside the repository", without its name. Before, with
+  notes from outside the repository kept, Claude Code's memory files were uploaded as notes, and every
+  edit's file name went into the change ledger.
+
 ## 0.11.5
 
 - With a read-only API key, a session still starts with your workspace's context: its pages, what

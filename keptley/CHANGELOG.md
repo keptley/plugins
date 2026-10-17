@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.7
+
+- A session started in a subfolder of a repository now shares the repository's CLAUDE.md files as
+  well: before, it found only those under the folder it started in, and named them from there.
+
 ## 0.11.6
 
 - Nothing in a hidden folder of your home directory is sent, whatever your workspace keeps: not

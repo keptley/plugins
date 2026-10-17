@@ -228,30 +228,28 @@ export function gitAuthor(cwd) {
  * already repository-relative, which is how Keptley stores them.
  */
 export function guidanceFiles(cwd) {
+    // From the repository's top, wherever the session started (#2240): a pathspec is relative to the working
+    // directory, so asked from apps/web git listed only CLAUDE.md files under apps/web, and a session started
+    // in a subdirectory sent no root CLAUDE.md at all. Listed from the top, every path is repository-relative.
+    let root;
     let listed;
     try {
-        listed = execFileSync('git', ['ls-files', '-z', '*CLAUDE.md', 'CLAUDE.md'], {
+        root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
             cwd,
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'ignore'],
+        }).trim();
+        listed = execFileSync('git', ['ls-files', '-z', '*CLAUDE.md', 'CLAUDE.md'], {
+            cwd: root,
             encoding: 'utf8',
             stdio: ['ignore', 'pipe', 'ignore'],
             maxBuffer: 1024 * 1024,
         });
     }
     catch {
+        // Outside a repository: nothing to send, and never a failed hook.
         return [];
     }
-    const root = (() => {
-        try {
-            return execFileSync('git', ['rev-parse', '--show-toplevel'], {
-                cwd,
-                encoding: 'utf8',
-                stdio: ['ignore', 'pipe', 'ignore'],
-            }).trim();
-        }
-        catch {
-            return cwd;
-        }
-    })();
     const out = [];
     // Distinct, because the two patterns above overlap on a root CLAUDE.md, and capped so a monorepo
     // full of them cannot make a session start slow.

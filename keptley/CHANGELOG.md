@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.8
+
+- `/keptley:status` now says "merged and not written down", the words Activity, Sprint and the Monday
+  digest use. Before, it said "merged with no page changed".
+
 ## 0.11.7
 
 - A session started in a subfolder of a repository now shares the repository's CLAUDE.md files as

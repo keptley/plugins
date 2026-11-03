@@ -94,7 +94,7 @@ Typed in Claude Code, these do the whole job rather than leaving you to phrase i
 | `/keptley:stale`           | Pages a merged change may have made wrong, worst first, and offers to fix one   |
 | `/keptley:changes [7d]`    | What changed lately, by people and by AI, and why                               |
 | `/keptley:save [path]`     | Saves what the session worked out as a page, after you approve it               |
-| `/keptley:status [role]`   | Where the work stands, including what is merged with no page changed            |
+| `/keptley:status [role]`   | Where the work stands, including what is merged and not written down            |
 | `/keptley:book [chapter]`  | Reads your team's compiled handbook, and follows any line back to its rows      |
 | `/keptley:produced [kind]` | What your sessions made and nobody committed, and which of it nobody has opened |
 
